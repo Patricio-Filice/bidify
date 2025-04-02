@@ -4,8 +4,8 @@ import { faker } from '@faker-js/faker';
 const prisma = new PrismaClient();
 
 async function main() {
-  if (process.env.NODE_ENV === 'production') {
-    console.error('Cannot seed database in production');
+  if (process.env.NODE_ENV !== 'development') {
+    console.error('Cannot seed database outside of develepoment, current environment: ', process.env.NODE_ENV);
     process.exit(1);
   }
 
