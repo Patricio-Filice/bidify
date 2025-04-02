@@ -6,6 +6,11 @@ First, install the dependencies:
 pnpm install
 ```
 
+Then, run the seed script to fill the database with information (DEV only):
+```bash
+npx prisma db seed
+```
+
 Lastly, run the development server:
 ```bash
 pnpm dev
