@@ -4,9 +4,14 @@ First, install the dependencies:
 pnpm install
 ```
 
-Then, run the seed script to fill the database with information (DEV only):
+Then, run the migrate script to setup your database schemas:
 ```bash
-npx prisma db seed
+npx prisma migrate deploy
+```
+
+Then if needed, we have a seed file to populate some initial data (Only for development):
+```bash
+npx prisma migrate db seed
 ```
 
 Lastly, run the development server:
