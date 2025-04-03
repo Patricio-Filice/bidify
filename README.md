@@ -131,7 +131,6 @@ All of this should be delivered on a repository that you will create on github a
     - Improve SSR as we are currently fetching all the information on client side, this is due to implementing a custom retry policy to invalidate the information but also to not full couple the APIs with the frontend, alongside SSR Server Side Events could be implemented to display real time events for all the users or with Signals (TC-39) to only update the components that truly need to change.
     - I would introduce unit tests with jest to test at least all the hooks and components and integration tests with some tool such a playwright or selenium to ensure that the features are working as expected
     - I would introduce translations and data formats based (such as dates, prices, read direction) based on the language, region and user's preference
-    - I would introduce 
     - Even though the UX is rather good, the branding is awful, this is due to the overuse of shadcn components, I would recommend styling or creating some elements from scratch in order to display an image of it's own
     - I would liked to introduce a 
     - I would liked to validate the requests on the server side, which is the most important side, as we can't trust the information that the user's sending, and real validations and security are on this layer, the frontend should guide the user, through errors and message, but it won't bring any security to the app
