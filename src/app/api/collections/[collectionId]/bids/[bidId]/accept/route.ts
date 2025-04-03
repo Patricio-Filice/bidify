@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../../../../../prisma/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // POST /api/collections/[id]/bids/[id]/accept
 export async function POST(
@@ -8,15 +10,34 @@ export async function POST(
   ) {
     const { collectionId, bidId } = await params
 
-    // Verify collection exists and it's from the same user
+    const session = await getServerSession(authOptions);
+        
+    if (!session) {
+      return NextResponse.json({ error: 'You must be logged in.' }, { status: 401 })
+    }
+
     const collection = await prisma.collection.findUnique({
       where: { id: collectionId }
     });
     
     if (!collection) {
       return NextResponse.json(
-        { error: "Can't accept bids from other users collections" },
+        { error: "Collection not found" },
+        { status: 404 }
+      );
+    }
+
+    if (collection.ownerId !== session.user.id) {
+      return NextResponse.json(
+        { error: "Can't accept bids from other user's collections" },
         { status: 403 }
+      );
+    }
+
+    if (collection.stocks <= 0) {
+      return NextResponse.json(
+        { error: "Can't accept bids if the collection is out of stock" },
+        { status: 400 }
       );
     }
 

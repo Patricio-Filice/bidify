@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../prisma/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -44,14 +46,19 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = await request.json();
-  
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return NextResponse.json({ error: 'You must be logged in.' }, { status: 401 })
+  }
+
   const collection = await prisma.collection.create({
     data: {
       name: body.name,
       description: body.description,
       stocks: parseInt(body.stocks),
       price: parseFloat(body.price),
-      ownerId: "1671786a-cf77-4798-937d-6c6a84d02e20"
+      ownerId: session.user.id
     }
   });
 

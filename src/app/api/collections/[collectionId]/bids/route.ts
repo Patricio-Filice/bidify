@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import prisma from '../../../../../../prisma/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 // GET /api/collections/[id]/bids
 export async function GET(
@@ -32,8 +34,13 @@ export async function POST(
     request.json(),
     params
   ])
+
+  const session = await getServerSession(authOptions);
+      
+  if (!session) {
+    return NextResponse.json({ error: 'You must be logged in.' }, { status: 401 })
+  }
   
-  // Verify collection exists and if it's owner is not creating a bid
   const collection = await prisma.collection.findUnique({
     where: { id: collectionId }
   });
@@ -45,12 +52,15 @@ export async function POST(
     );
   }
 
+  if (collection.ownerId === session.user.id) {
+    return NextResponse.json({ error: "Can't place a bid on your own collection" }, { status: 400 })
+  }
+
   const bid = await prisma.bid.create({
     data: {
       price: parseFloat(body.price),
       collectionId: collectionId,
-      // Should be retrieved from session instead of body
-      userId: "1671786a-cf77-4798-937d-6c6a84d02e20",
+      userId: session.user.id,
       status: 'PENDING'
     }
   });
