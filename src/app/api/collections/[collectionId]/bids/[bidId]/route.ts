@@ -19,7 +19,6 @@ export async function PUT(
       return NextResponse.json({ error: 'You must be logged in.' }, { status: 401 })
     }
   
-    // Verify bid exists and it's from the same user
     const bid = await prisma.bid.update({
       where: { id: bidId, userId: session.user.id },
       data: body

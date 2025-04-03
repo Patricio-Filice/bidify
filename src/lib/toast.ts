@@ -12,7 +12,6 @@ export type ToastProps = {
 }
 
 export const toast = {
-  // Basic toast
   show: (props: ToastProps) => {
     const { title, description, variant = "default", duration = 5000, action } = props
 
@@ -32,7 +31,6 @@ export const toast = {
     }
   },
 
-  // Shortcut methods
   success: (title: string, description?: string) => 
     sonnerToast.success(title, { description }),
   error: (title: string, description?: string) => 
@@ -44,7 +42,6 @@ export const toast = {
   loading: (title: string, description?: string) => 
     sonnerToast.loading(title, { description }),
   
-  // Advanced controls
   dismiss: (id?: string) => sonnerToast.dismiss(id),
   promise: sonnerToast.promise,
 }
