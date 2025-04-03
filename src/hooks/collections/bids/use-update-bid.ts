@@ -11,9 +11,7 @@ export const useUpdateBid = (collection: Collection, bidId: string, options?: { 
   
     return useMutation({
       mutationFn: (update: BidUpsert) => updateBid(collection, bidId, update),
-      onMutate: async (update: BidUpsert) => {
-        await queryClient.cancelQueries({ queryKey: ['bids', collection.id] });
-  
+      onMutate: async (update: BidUpsert) => {  
         const previousPaginatedBids = queryClient.getQueryData<PaginatedResponse<BidDetails>>(['bids', collection.id]);
   
         queryClient.setQueryData(['bids', collection.id], (currentPaginatedBids: PaginatedResponse<BidDetails>) => ({
@@ -23,9 +21,9 @@ export const useUpdateBid = (collection: Collection, bidId: string, options?: { 
   
         return { previousPaginatedBids };
       },
-      onError: (_err, _variables, context) => {
+      onError: (error, _variables, context) => {
         queryClient.setQueryData(['bids', collection.id], context?.previousPaginatedBids);
-        toast.error('Something went wrong', 'Failed to update bid');
+        toast.error('Something went wrong', error.message);
       },
       onSuccess: () => {
         toast.success('Success', 'Bid successfully updated');

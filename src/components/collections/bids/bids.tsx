@@ -16,24 +16,33 @@ import BidForm from './bid-form';
 import { useAcceptBid } from '@/hooks/collections/bids/use-accept-bid';
 import { UserAvatar } from '@/elements/user-avatar';
 import { Collection } from '@/models/collection';
+import { useDeleteBid } from '@/hooks/collections/bids/use-delete-bid';
+import { useSession } from 'next-auth/react';
 
 export default function BidTable({
   bids,
-  collection,
-  isOwner
+  collection
 }: {
   bids: BidDetails[];
   collection: Collection;
-  isOwner: boolean;
 }) {
   const [editingBid, setEditingBid] = useState<Bid | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const { data: session } = useSession();
 
   const { mutate: acceptBid, isPending: isAcceptPending } = useAcceptBid(collection)
+  const { mutate: deleteBid, isPending: isDeletePending } = useDeleteBid(collection)
+
+  const isActionInProgress = isAcceptPending || isDeletePending
+  const isAuthenticated = !!session
+  const isCollectionOwner = collection.id === session?.user.id
+  const hasCurrentUserSomeBid = bids.some(b => b.userId === session?.user.id)
+  const hasCollectionStock = collection.stocks > 0
 
   return (
     <div>
-      {(
+      { /** Prevents spam from users that want to push their bids on top */ }
+      {isAuthenticated && collection.ownerId !== session?.user.id && !hasCurrentUserSomeBid && (
         <Button onClick={() => setIsCreating(true)} className="mb-4">
           Place New Bid
         </Button>
@@ -60,24 +69,34 @@ export default function BidTable({
               <TableCell>${bid.price}</TableCell>
               <TableCell>{bid.status}</TableCell>
               <TableCell className="flex flex-row items-center gap-2">
-                {isOwner && bid.status === 'PENDING' && (
+                {isAuthenticated && isCollectionOwner && hasCollectionStock && bid.status === 'PENDING' && (
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => acceptBid(bid.id)}
-                    disabled={isAcceptPending}
+                    disabled={isActionInProgress}
                   >
                     Accept
                   </Button>
                 )}
-                {bid.status === 'PENDING' && (
+                {
+                 isAuthenticated && bid.userId === session.user.id && bid.status === 'PENDING' && (
                   <>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setEditingBid(bid)}
+                      disabled={isActionInProgress}
                     >
                       Edit
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => deleteBid(bid.id)}
+                      disabled={isActionInProgress}
+                    >
+                      Delete
                     </Button>
                   </>
                 )}

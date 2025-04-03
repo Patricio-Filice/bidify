@@ -1,7 +1,6 @@
 import { CollectionUpsert } from "@/models/collection-upsert";
 
 export async function updateCollection(collectionId: string, update: CollectionUpsert) {
-  console.warn(collectionId, update)
   const response = await fetch(`/api/collections/${collectionId}`, {
         method: 'PUT',
         headers: {

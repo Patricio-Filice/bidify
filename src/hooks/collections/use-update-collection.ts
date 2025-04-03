@@ -15,8 +15,6 @@ export const useUpdateCollection = (collectionId: string, options?: { onSuccess?
       onMutate: async (update: CollectionUpsert) => {
   
         const previousPaginatedCollections = queryClient.getQueryData<PaginatedResponse<Collection>>(['collections']);
-  
-        console.warn(collectionId, previousPaginatedCollections)
 
         queryClient.setQueryData(['collections'], (currentPaginatedCollections: VirtualPaginatedCollectionResponse) => {
           

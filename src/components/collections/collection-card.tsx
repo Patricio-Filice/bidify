@@ -1,15 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Collection } from '@prisma/client';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '../../elements/collapsible';
 import { Button } from '../../elements/button';
 import { useBids } from '@/hooks/collections/bids/use-bids';
 import Bids from './bids/bids';
 import { Spinner } from '@/elements/spinner';
+import { Collection } from '@/models/collection';
 
 const DEFAULT_HEIGHT = 120;
-const EXPANDED_LOADING_OFFSET = 120
+const EXPANDED_LOADING_OFFSET = 60
 const EXPANDED_LOADED_OFFSET = 140
 
 export default function CollectionCard({ collection, onHeightChange }: { collection: Collection, onHeightChange?: (height: number) => void;}) {
@@ -49,7 +49,7 @@ export default function CollectionCard({ collection, onHeightChange }: { collect
     <Collapsible onOpenChange={handleOpenChange} className="border rounded-lg p-4 mb-4">
       <div className="flex justify-between items-center">
         <div className="flex flex-col min-w-56">
-          <h3 className="font-bold">{collection.name}</h3>
+          <h3 className="font-bold whitespace-nowrap flex flex-row flex-nowrap items-center gap-2">{collection.name} <span className='text-xs text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis flex-initial min-w-0'>(by: {collection.owner.name})</span></h3>
           <p className="text-sm text-gray-600 whitespace-nowrap overflow-hidden text-ellipsis flex-initial min-w-0">{collection.description}</p>
           <p>Stocks: {collection.stocks} | Price: ${collection.price}</p>
         </div>
@@ -68,7 +68,6 @@ export default function CollectionCard({ collection, onHeightChange }: { collect
           <Bids 
             bids={paginatedBids?.items || []} 
             collection={collection}
-            isOwner={true} // In real app, check against session
           />
         )}
       </CollapsibleContent>

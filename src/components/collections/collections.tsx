@@ -13,12 +13,16 @@ import CollectionForm from './collection-form';
 import { useDeleteCollection } from '@/hooks/collections/use-delete-collection';
 import { VirtualRowState } from '@/models/virtual-row-state';
 import { Input } from '@/elements/input';
+import { useSession } from 'next-auth/react';
 
 export function Collections() {
   const [isCreating, setIsCreating] = useState(false);
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const { data: session } = useSession();
+
+  const isAuthenticated = !!session
 
   const {
     data,
@@ -65,13 +69,13 @@ export function Collections() {
   useEffect(() => {
     const timer = setTimeout(() => {
       refetch();
-    }, 300); // Debounce search by 300ms
+    }, 300)
 
     return () => clearTimeout(timer);
-  }, [searchTerm, refetch]);
+  }, [searchTerm, refetch])
 
   if (status === 'pending') {
-    return <CollectionsSkeleton />;
+    return <CollectionsSkeleton />
   }
 
   if (status === 'error') {
@@ -80,7 +84,7 @@ export function Collections() {
         title="Error while retrieving collections"
         error={error}
       ></ErrorAlert>
-    );
+    )
   }
 
   return (
@@ -95,12 +99,13 @@ export function Collections() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button onClick={() => setIsCreating(true)} className="shrink-0 max-w-[448px]">
+        {isAuthenticated && <Button onClick={() => setIsCreating(true)} className="shrink-0 max-w-[448px]">
           <PlusIcon className="mr-2 h-4 w-4" />
           New Collection
-        </Button>
+        </Button>}
       </div>
 
+      { collections.length === 0 && <p className="text-md mx-auto w-fit mt-8">No collections found.</p> }
       <div
         ref={parentRef}
         className="h-[calc(100vh-250px)] w-full overflow-auto"
@@ -115,6 +120,7 @@ export function Collections() {
           {items.map((virtualRow) => {
             const isLoaderRow = virtualRow.index > collections.length - 1;
             const collection = collections[virtualRow.index];
+            const isOwner = collection && session?.user.id === collection.ownerId
 
             // TODO: Move virtual scroller on it's own component
             return (
@@ -138,7 +144,7 @@ export function Collections() {
                 ) : (
                   <div key={collection.id} className="relative group">
                   {/* Owner actions floating on the right */}
-                  {(
+                  {isOwner && (
                     <div className="absolute right-4 top-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="outline"
@@ -165,7 +171,7 @@ export function Collections() {
                 </div>
                 )}
               </div>
-            );
+            )
           })}
         </div>
       </div>

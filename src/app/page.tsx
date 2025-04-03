@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from "@/elements/avatar";
+import { AuthSection } from "@/components/auth/auth-section";
 import Collections from "@/pages/collections-page";
 
 export default function Home() {
@@ -6,9 +6,7 @@ export default function Home() {
     <>
     <header className="flex flex-row justify-between p-4">
       <h2>Bidify</h2>
-      <Avatar>
-        <AvatarFallback>ME</AvatarFallback>
-      </Avatar>
+      <AuthSection></AuthSection>
     </header>
     <Collections></Collections>
     <footer className="flex flex-row p-4 mt-auto">
