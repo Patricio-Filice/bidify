@@ -35,9 +35,9 @@ export const useUpdateCollection = (collectionId: string, options?: { onSuccess?
   
         return { previousPaginatedCollections };
       },
-      onError: (_err, _variables, context) => {
+      onError: (error, _variables, context) => {
         queryClient.setQueryData(['collections'], context?.previousPaginatedCollections);
-        toast.error('Something went wrong', 'Failed to update collection');
+        toast.error('Something went wrong', error.message);
       },
       onSuccess: () => {
         toast.success('Success', 'Collection successfully updated');

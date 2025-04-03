@@ -16,7 +16,7 @@ export const useDeleteBid = (collection: Collection) => {
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['bids', collection.id] });
-        toast.success('Success', 'Bid created successfully');
+        toast.success('Success', 'Bid deleted successfully');
       },
     });
   };

@@ -8,8 +8,8 @@ export const useCreateCollection = (options?: { onSuccess?: () => void }) => {
   
     return useMutation({
       mutationFn: (create: CollectionUpsert) => createCollection(create),
-      onError: () => {
-        toast.error('Something went wrong', 'Failed to create collection');
+      onError: (error) => {
+        toast.error('Something went wrong', error.message);
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['collections'] })
